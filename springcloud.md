@@ -5,11 +5,40 @@
 总结：某时刻 某个微服务不可以用了，eureka 不会被立刻清理，依旧对该微服务的信息进行保存！
 
 1. 默认，若eurekaServer在一定时间内没有收到某个微服务实例心跳，EurekaServer会注销该实例（默认90s）。但当网络分区发生故障，微服务Eureka之间无法正常通讯，以上行为可能变得非常危险 ，因为微服务本身非常健康，**不应该注销这个服务** 。Eureka自我保护机制来解决这个问题--当EurekaServer节点在短时间内丢失过多客户端时，那么这个节点就会进入自我保护机制，进而保护服务注册表中信息，不再注销微服务。网络故障恢复后，EurekaServer节点自行退出上述机制。
+
 2. 自我保护模式中，ES不会注销任何服务实例。当收到的心跳数重新恢复到阈值以上时，则退出上述模式。
+
 3. 总结：不会盲目注销任何健康微服务。
+
 4. SpringCloud 自我保护机制开关：eureka.server.enable-self-perservation=faslse/true
 
+   ```java
+   hosts中增加地址映射
+   server:
+     port: 7003
+   spring:
+     application:
+       #集群情况下，请保证application.name 相同，否则不可用（在eureka控制台unavailable-replicas中可以看到不可用的副本节点）
+       name: clusterEureka
+   eureka:
+     instance:
+       hostname: eureka3 # Eureka 服务端的实例名称
+       prefer-ip-address: false
+     client:
+       register-with-eureka: true # 表示是否向eureka 注册自己
+       fetch-registry: true   #　若为false 则表示自己为注册中心
+       service-url:
+   	  # defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+         # 集群写法如下：为了防止某eureka服务
+         # eureka的server会把自己的注册信息与其他的server同步，
+         # 所以这里我们不需要注册到自己身上，因为另外两台服务器会配置本台服务器
+         defaultZone: http://eureka1:7001/eureka/,http://eureka2:7002/eureka/
+   ```
 
+5. ```
+   # 而eureka是负载均衡消费者工程的。消费者拿到服务列表后，
+   # 从其中按照负载均衡算法选择一个主机去访问
+   ```
 
 
 
@@ -45,11 +74,10 @@ spring cloud ribbon 是基于Netflix Ribbon 实现的一套**客户端负载均�
 
 what can this do？
 
-	1. LB 负载均衡，常见LB软件有Nginx，Lvs，Apache+Tomcat等，就是要将用户请求平摊分配到多个服务上
-	1. dubbo、Springcloud中均给我们提供了负载均衡，SpringCloud的负载均衡算法可以自定义
-	1. LB简单分类：集中式LB(Nginx)，所有请求先集中后通过某种策略转发。进程式LB，将LB逻辑集成到消费方，消费方从服务注册中心(eureka)获知有哪些地址可用，然后再从这些地址中选出一个合适的服务器。Ribbon就属于进程内LB，它就继承于消费方。
-	1. 
-	1. 
+	LB 负载均衡，常见LB软件有Nginx，Lvs，Apache+Tomcat等，就是要将用户请求平摊分配到多个服务上
+	dubbo、Springcloud中均给我们提供了负载均衡，SpringCloud的负载均衡算法可以自定义
+	LB简单分类：集中式LB(Nginx)，所有请求先集中后通过某种策略转发。进程式LB，将LB逻辑集成到消费方，消费方从服务注册中心(eureka)获知有哪些地址可用，然后再从这些地址中选出一个合适的服务器。Ribbon就属于进程内LB，它就继承于消费方。
+	 
 
 
 
@@ -68,6 +96,23 @@ Feign可使Java Htttp编写客户端更容易
 ​	前面方法：Ribbon+RestTemplate， 利用RT对Http请求的封装处理，形成了一套模板化的调用方法。但在实际开发中，由于对服务依赖的调用可能不止一处，一个接口会被多处调用，所以通常会针对每个微服务封装一些客户端类来包装这些依赖服务的调用。
 
 ​	在Feign的实现下，我们只需创建一个接口并使用注解来配置，即可完成对服务提供方的接口绑定，简化了Spring Cloud Ribbon。
+
+```java
+@Component
+// 对该Service 指定 降级服务
+@FeignClient(value = "SPRINGCLOUD-PROVIDER-DEPT",fallbackFactory = DeptClientServiceFallBackFactory.class )
+// 与服务提供者的方法一致
+public interface DeptClientService {
+    @GetMapping("/dept/get/{id}")
+    public Dept queryById(@PathVariable("id") Long id);
+    @GetMapping("/dept/list")
+    public List<Dept> queryAll();
+    @PostMapping("/dept/add")
+    public boolean addDept(Dept dept);
+
+}
+
+```
 
 
 
