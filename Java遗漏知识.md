@@ -279,3 +279,16 @@ public boolean equals(Object anObject) {
 ```
 
 所以，若是HashMap存储非String类为对象的话，equals比较的是内存地址。所以，如果出现业务逻辑，如具有相同ID的Student pojo，在数据库中那必然一个用户，如果s1与s2都是id=1的pojo类。那么存储时，hashcode必须要一样，所以要改成使用id.hashcode()，而不是对内存.hashcode(这必然会不一致)。此外equals也要重写，因为他调用的是Object的equals，比较的是地址，两者必然是false，所以，要比较他的key，与String一样，这样就能保证不一样的两个实体但有一样的id 是一个东西。
+
+
+
+decimal
+
+```java
+//String -> BigDecimal 
+BigDecimal bd = new BigDecimal("xxx");
+String str = bd.toString();
+
+
+```
+
