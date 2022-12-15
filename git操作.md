@@ -8,7 +8,7 @@
 
 分布式版本管理系统
 
-![image-20221019200314112](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019200314112.png)
+![image-20221019200314112](git操作.assets/image-20221019200314112.png)
 
 每个人都有全部的代码
 
@@ -23,19 +23,19 @@ git config --global user.email "2783800599@qq.com"
 
 # Git基本理论
 
-![image-20221019202651485](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019202651485.png)
+![image-20221019202651485](git操作.assets/image-20221019202651485.png)
 
 
 
 
 
-![image-20221019203426033](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019203426033.png)
+![image-20221019203426033](git操作.assets/image-20221019203426033.png)
 
 
 
 
 
-![image-20221019203542964](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019203542964.png)
+![image-20221019203542964](git操作.assets/image-20221019203542964.png)
 
 
 
@@ -50,7 +50,7 @@ git clone url
 
 # Git文件操作
 
-![image-20221019204136276](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019204136276.png)
+![image-20221019204136276](git操作.assets/image-20221019204136276.png)
 
 
 
@@ -81,13 +81,13 @@ ssh-keygen -t rsa
 
 ```
 
-![image-20221019211024765](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019211024765.png)
+![image-20221019211024765](git操作.assets/image-20221019211024765.png)
 
 # Git分支
 
-![image-20221019212450983](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019212450983.png)
+![image-20221019212450983](git操作.assets/image-20221019212450983.png)
 
-![image-20221019212535956](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019212535956.png)
+![image-20221019212535956](git操作.assets/image-20221019212535956.png)
 
 
 
@@ -102,4 +102,41 @@ git checkout -b [branch] # 切换到某个分支
 在dev上操作，然后搞好后merge到主分支上
 ```
 
-![image-20221019213853980](C:\Users\MSi\AppData\Roaming\Typora\typora-user-images\image-20221019213853980.png)
+![image-20221019213853980](git操作.assets/image-20221019213853980.png)
+
+```
+主干与分支之间的操作
+主干：main
+分支：master
+
+git config --global user.name 'songdanming'
+git config --global user.email '1643137133@qq.com'
+
+git remote add origin https://github.com/doudou5628891/项目.git
+git remote set-url  origin https://[token密码]@github.com/doudou5628891/项目.git
+
+
+git status //查看文件状态
+git 
+git branch -a 查看所有分支 
+
+
+git push test --delete [branchname]删除远程分支
+git rm -f 文件名   //删除工作区和暂存区文件，并且将这次删除放入暂存区
+
+
+git checkout master // 切换到分支
+git pull test master // 更新本地分支
+//一顿文件操作
+git add .           // 添加操作的所有东西
+git commit -m "description" // 提交
+git push test master // 上传
+
+git checkout main  // 切换主干
+git pull test main // 远程拉主干
+git merge master   // 合并本地的master到本地主干中
+git push test main // push到远程主干
+
+
+```
+
