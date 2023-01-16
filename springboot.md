@@ -344,3 +344,184 @@ json字符串中，如果value为null的话，后端对应收到的就是null。
 各种方法组合使用
 
 https://blog.csdn.net/justry_deng/article/details/80972817/
+
+
+
+
+
+# 配置嵌入式Servlet容器
+
+1. 如何定制和修改servlet容器
+
+   ```java
+   server.port = 8080
+   server.context-path=/crud
+       
+   //通用
+   server.xxx
+   server.tomcat.xxx
+       
+       
+   ```
+
+   2. 编写一个
+
+   3. ```java
+      public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer(){
+      
+      	@Override
+      	public void customize(ConfigurableEmbeddedServletContainer container){
+              container.setPort(8083);
+          }
+      
+      }
+      ```
+
+      注册Servlet、Filter、Listener
+
+      ```java
+      @Configuration
+      public class MyServerConfig{
+          //注册三大组件 
+          public ServletRegisterationBean myServlet(){
+              ServletRegistrationBean registrationBean = new ServletRegistrationBean(new MyServlet(),"/myServlet");
+              return registrationBean;
+                  
+          }
+          public FilterRegistrationBean myFilter(){
+              FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+              registrationBean.setFilter(new MyFilter());
+              registrationBean.setUrlPatterns(Arrays.asList("/hello","myServlet"));
+              return registrationBean;
+      	}
+          public ServletListenerRegistrationBean myListener(){
+              ServletListenerRegistrationBean  = new ServletListenerRegistrationBean<MyListener>(new MyListener);
+              return registrationBean;
+          }
+      
+      }
+      public 
+      public class MyServlet extends HttpServlet{
+          //get
+          
+          //post
+          
+      }
+      
+      
+      public class MyFilter implements Filter{
+      	@Override
+          sout("myFilter process....");
+          chain.doFilter(request,response);
+      }
+      
+      ```
+
+      
+
+   默认的servlet容器是tomcat
+
+   springboot还支持jetty（长连接，聊天等） undertow(高性能非阻塞)
+
+   如何引入呢？
+
+```xml
+	<dependency>
+    	spring-boot-starter-jetty
+        org.springframework.boot
+    </dependency>
+```
+
+ 
+
+![image-20221229152539729](springboot.assets/image-20221229152539729.png)
+
+嵌入式Servlet启动原理
+
+优点:简单便携
+
+缺点:默认不支持jsp，优化定制比较复杂
+
+## 外部安装tomcat并启动以及应用war包方式打包
+
+1.必须创建一个war项目
+
+2.将嵌入式tomcat指定为provided
+
+```xml
+<dependency>
+    org.springframework.boot
+    spring-boot-starter-tomcat
+    <scope>provided</scope>
+</dependency>
+    
+```
+
+3.必须便携一个SpringBootservletInitializer的子类，并调用Configure方法
+
+![image-20221229161019782](springboot.assets/image-20221229161019782.png)
+
+4.启动服务器就可以使用
+
+
+
+原理：
+
+jar： 1.Springboot主类main方法，启动ioc容器，创建嵌入式的servlet容器
+
+war：启动tomcat，服务器启动SpringBoot应用【SpringBootServletInitializer】，启动ioc容器。
+
+servlet3.0 spring 注解版
+
+规则：
+
+​	![image-20221229162038434](springboot.assets/image-20221229162038434.png)
+
+流程
+
+![image-20221229162222901](springboot.assets/image-20221229162222901.png)
+
+![image-20221229162254142](springboot.assets/image-20221229162254142.png)
+
+![image-20221229162438804](springboot.assets/image-20221229162438804.png)
+
+总之，就是先启动Servlet容器，在启动Springboot应用
+
+jar包和war包的区别：
+1、war是一个web模块，其中需要包括WEB-INF，是可以直接运行的WEB模块；jar一般只是包括一些class文件，在声明了Main_class之后是可以用java命令运行的。
+
+2、war包是做好一个web应用后，通常是网站，打成包部署到容器中；jar包通常是开发时要引用通用类，打成包便于存放管理。
+
+3、war是Sun提出的一种Web应用程序格式，也是许多文件的一个压缩包。这个包中的文件按一定目录结构来组织；classes目录下则包含编译好的Servlet类和Jsp或Servlet所依赖的其它类（如JavaBean）可以打包成jar放到WEB-INF下的lib目录下。
+
+JAR文件格式以流行的ZIP文件格式为基础。与ZIP文件不同的是，JAR 文件不仅用于压缩和发布，而且还用于部署和封装库、组件和插件程序，并可被像编译器和 JVM 这样的工具直接使用。
+
+
+https://blog.csdn.net/weixin_40910372/article/details/89515686
+
+### jar包
+
+直接通过内置tomcat运行，不需要额外安装tomcat。如需修改内置tomcat的配置，只需要在spring boot的配置文件中配置。内置tomcat没有自己的日志输出，全靠jar包应用输出日志。但是比较方便，快速，比较简单。
+
+### war包
+
+传统的应用交付方式，需要安装tomcat，然后放到waeapps目录下运行war包，可以灵活选择tomcat版本，可以直接修改tomcat的配置，有自己的tomcat日志输出，可以灵活配置安全策略。相对打成jar包来说没那么快速方便。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
