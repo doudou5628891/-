@@ -137,7 +137,7 @@ git pull test main // 远程拉主干
 git merge master   // 合并本地的master到本地主干中
 git push test main // push到远程主干
 
-
+git config --global http.version HTTP/1.1
 ```
 
 ```
@@ -147,6 +147,11 @@ git push -f test main //强制上传至github
 git config http.postBuffer 2524288000 // post大小为250m
 git lfs migrate import --include="*.pptx" --everything -y / 设置远程lfs大文件 pptx
 git lfs ls-files //列出lfs 管理的文件
+
+
+ git reset --soft HEAD~1
+ //还需要清理缓存区中的x
+ git rm -r --cached .
 
 ```
 
