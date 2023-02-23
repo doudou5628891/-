@@ -496,6 +496,14 @@ try {
 }
 ```
 
+#### 6.使用RedisTokenStore来存储token
+
+storeAccessToken中的两个传入参数为
+
+![image-20230215232618564](spingsecurity.assets/image-20230215232618564.png)
+
+![image-20230215232721163](spingsecurity.assets/image-20230215232721163.png)
+
 
 
 #### Tips Filter与Interceptor的区别
