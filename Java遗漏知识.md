@@ -292,3 +292,8 @@ String str = bd.toString();
 
 ```
 
+## 设计模式
+
+原型模式
+
+prototype -> 如getBean() 方法中的doGetBean()

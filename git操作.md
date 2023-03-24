@@ -155,3 +155,9 @@ git lfs ls-files //列出lfs 管理的文件
 
 ```
 
+```
+//当遇到 克隆了远程项目，本地只有主分支没有开发分支，但有远程开发分支
+//解决方法创建本地分支并关联远程开发分支
+git branch rwdev remotes/origin/dev2023
+```
+
